@@ -63,21 +63,30 @@ install_dependencies() {
 }
 
 install_sonm_packages() {
-    gpg_key_url="https://packagecloud.io/SONM/core/gpgkey"
-    apt_config_url="https://packagecloud.io/install/repositories/SONM/core/config_file.list?os=ubuntu&dist=xenial&source=script"
-    apt_source_path="/etc/apt/sources.list.d/SONM_core.list"
-    curl -sSf "${apt_config_url}" > ${apt_source_path}
-    echo -n "Importing packagecloud gpg key... "
-    # import the gpg key
-    curl -L "${gpg_key_url}" 2> /dev/null | apt-key add - &>/dev/null
-    echo "done."
+    # gpg_key_url="https://packagecloud.io/SONM/core/gpgkey"
+    # apt_config_url="https://packagecloud.io/install/repositories/SONM/core/config_file.list?os=ubuntu&dist=xenial&source=script"
+    # apt_source_path="/etc/apt/sources.list.d/SONM_core.list"
+    # curl -sSf "${apt_config_url}" > ${apt_source_path}
+    # echo -n "Importing packagecloud gpg key... "
+    # # import the gpg key
+    # curl -L "${gpg_key_url}" 2> /dev/null | apt-key add - &>/dev/null
+    # echo "done."
 
     echo -n "Running apt-get update... "
     apt-get update &> /dev/null
     echo "done."
-    apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y sonm-cli sonm-node sonm-worker sonm-optimus
+
+    echo "Downloading sonm packages..."
+    wget -q https://github.com/fogtech-io/core/releases/download/v0.4.31/sonm-cli_0.4.31_amd64.deb
+    wget -q https://github.com/fogtech-io/core/releases/download/v0.4.31/sonm-mon_0.4.31_amd64.deb
+    wget -q https://github.com/fogtech-io/core/releases/download/v0.4.31/sonm-node_0.4.31_amd64.deb
+    wget -q https://github.com/fogtech-io/core/releases/download/v0.4.31/sonm-optimus_0.4.31_amd64.deb
+    wget -q https://github.com/fogtech-io/core/releases/download/v0.4.31/sonm-worker_0.4.31_amd64.deb
+    echo "sonm packages downloaded"
+
+    apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y ./sonm-cli_0.4.31_amd64.deb ./sonm-node_0.4.31_amd64.deb ./sonm-worker_0.4.31_amd64.deb ./sonm-optimus_0.4.31_amd64.deb
     if ! [[ -z $(echo $SONM_VERSION) ]]; then
-        apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y sonm-mon
+        apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y ./sonm-mon_0.4.31_amd64.deb
     fi
     echo "Sonm packages installed"
 }
